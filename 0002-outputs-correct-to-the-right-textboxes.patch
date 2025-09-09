@@ -1,0 +1,72 @@
+From 091fee1a506ada88e0bb74cc949444c97477ded1 Mon Sep 17 00:00:00 2001
+From: Isaac Hutchinson <Isaac.HUTCHINSON@student.tafesa.edu.au>
+Date: Tue, 9 Sep 2025 17:05:51 +0930
+Subject: [PATCH 2/2] outputs correct to the right textboxes
+
+---
+ ProductMaintenance/ProductApps/MainWindow.xaml    | 14 +++++++++-----
+ ProductMaintenance/ProductApps/MainWindow.xaml.cs | 10 ++++++++++
+ ProductMaintenance/ProductApps/Product.cs         |  2 +-
+ 3 files changed, 20 insertions(+), 6 deletions(-)
+
+diff --git a/ProductMaintenance/ProductApps/MainWindow.xaml b/ProductMaintenance/ProductApps/MainWindow.xaml
+index cdb8487..f07f6b0 100644
+--- a/ProductMaintenance/ProductApps/MainWindow.xaml
++++ b/ProductMaintenance/ProductApps/MainWindow.xaml
+@@ -11,10 +11,14 @@
+         <TextBox Name="productTextBox" HorizontalAlignment="Left" Height="24" Margin="122,37,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="96"/>
+         <TextBox Name="priceTextBox" HorizontalAlignment="Left" Height="24" Margin="122,78,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="77"/>
+         <TextBox x:Name="quantityTextBox" HorizontalAlignment="Left" Height="24" Margin="122,119,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="77"/>
+-        <Button Name="calculateButton" Content="_Calculate" HorizontalAlignment="Left" Height="37" Margin="327,152,0,0" VerticalAlignment="Top" Width="122" Click="calculateButton_Click"/>
+-        <Button Name="clearButton" Content="C_lear" HorizontalAlignment="Left" Height="34" Margin="327,209,0,0" VerticalAlignment="Top" Width="122" Click="clearButton_Click"/>
+-        <Button Name="closeButton" Content="Cl_ose" HorizontalAlignment="Left" Height="34" Margin="327,264,0,0" VerticalAlignment="Top" Width="122" Click="closeButton_Click"/>
+-        <TextBlock Text="Total Charge after adding &#xA;the delivery charge ($25)" Margin="18,218,367,64" />
+-        <TextBox x:Name="totalChargeTextBox" Margin="164,218,195,64" />
++        <Button Name="calculateButton" Content="_Calculate" HorizontalAlignment="Left" Height="37" Margin="357,153,0,0" VerticalAlignment="Top" Width="122" Click="calculateButton_Click"/>
++        <Button Name="clearButton" Content="C_lear" HorizontalAlignment="Left" Height="34" Margin="357,211,0,0" VerticalAlignment="Top" Width="122" Click="clearButton_Click"/>
++        <Button Name="closeButton" Content="Cl_ose" HorizontalAlignment="Left" Height="34" Margin="357,260,0,0" VerticalAlignment="Top" Width="122" Click="closeButton_Click"/>
++        <TextBlock Text="Total Charge after adding &#xA;the delivery charge ($25)" Margin="18,196,326,86" />
++        <TextBox x:Name="totalChargeTextBox" Margin="212,196,174,86" />
++        <TextBlock Text="Total Charge after adding &#xA;the wrap charge ($5)" Margin="18,238,326,44" />
++        <TextBox x:Name="afterWrapTextBox" Margin="212,238,174,44" RenderTransformOrigin="0.481,1.801" />
++        <TextBlock Text="Total Charge after GST @ 10%" Margin="18,282,326,0" />
++        <TextBox x:Name="afterGSTTextBox" Margin="212,282,174,0" RenderTransformOrigin="0.481,1.801" />
+     </Grid>
+ </Window>
+diff --git a/ProductMaintenance/ProductApps/MainWindow.xaml.cs b/ProductMaintenance/ProductApps/MainWindow.xaml.cs
+index 1af0c20..c7ae713 100644
+--- a/ProductMaintenance/ProductApps/MainWindow.xaml.cs
++++ b/ProductMaintenance/ProductApps/MainWindow.xaml.cs
+@@ -34,6 +34,16 @@ namespace ProductApps
+                 cProduct = new Product(Convert.ToDecimal(priceTextBox.Text), Convert.ToInt16(quantityTextBox.Text));
+                 cProduct.calTotalPayment();
+                 totalPaymentTextBlock.Text = Convert.ToString(cProduct.TotalPayment);
++                float afterDelivery = float.Parse(totalPaymentTextBlock.Text);
++                afterDelivery = afterDelivery + 25;
++                totalChargeTextBox.Text = afterDelivery.ToString();
++                float afterWrapping = float.Parse(totalChargeTextBox.Text);
++                afterWrapping = afterWrapping + 5;
++                afterWrapTextBox.Text = afterWrapping.ToString();
++
++                decimal afterGst = decimal.Parse(afterWrapTextBox.Text);
++                afterGst = afterGst * 1.1M;
++                afterGSTTextBox.Text = afterGst.ToString();
+             }
+             catch (FormatException)
+             {
+diff --git a/ProductMaintenance/ProductApps/Product.cs b/ProductMaintenance/ProductApps/Product.cs
+index 68ceab4..b2e5bf7 100644
+--- a/ProductMaintenance/ProductApps/Product.cs
++++ b/ProductMaintenance/ProductApps/Product.cs
+@@ -64,7 +64,7 @@ namespace ProductApps
+         //Calculate the total payment
+         public void calTotalPayment()
+         {
+-            TotalPayment = ((Price * Quantity) + 25) * 1.1M;
++            TotalPayment = Price * Quantity;
+         }
+     }
+ }
+-- 
+2.50.1.windows.1
+
